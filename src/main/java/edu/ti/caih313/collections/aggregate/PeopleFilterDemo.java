@@ -35,7 +35,7 @@ public class PeopleFilterDemo {
         Person boPeep = new Person(new Name("Bo", "Peep"), FEMALE, 205);
         boPeep.setEmail(EmailAddress.Email.WORK, "bopeep@gmail.com");
 
-        Person personArray[] = {
+        Person[] personArray = {
                 johnSmith, karlNg, jeffSmith, tomRich, bobSmith, janeDoe, tonyStark, boPeep
         };
 
@@ -90,25 +90,25 @@ public class PeopleFilterDemo {
 
         System.out.println("\n");
         System.out.println("The youngest female is:");
-        Stream femaleAge =
+        Stream<Name> femaleAge =
                 Arrays.stream(personArray)
                         .filter(p -> p.getGender() == FEMALE)
-                        .sorted((p1, p2) -> p1.getAge() - p2.getAge()).map(p -> p.getName()).limit(1);
-        femaleAge.forEach(p -> System.out.print(p));
+                        .sorted((p1, p2) -> p1.getAge() - p2.getAge()).map(Person::getName).limit(1);
+        femaleAge.forEach(System.out::print);
 
         System.out.print("\n");
         System.out.print("\n");
         System.out.println("The oldest male is:");
-        Stream maleAge =
+        Stream<Name> maleAge =
                 Arrays.stream(personArray)
                         .filter(p -> p.getGender() == MALE)
                         .sorted((p1, p2) -> p2.getAge() - p1.getAge()).map(Person::getName).limit(1);
-        maleAge.forEach(s -> System.out.print(s));
+        maleAge.forEach(System.out::print);
 
         System.out.print("\n");
         System.out.print("\n");
         System.out.println("List of unique last names:");
-        Stream people =
+        Stream  people =
                 Arrays.stream(personArray).map(p -> p.getName().getLastName()).distinct()
                 ;
         people.forEach(s -> System.out.print(s + ", "));
@@ -133,18 +133,31 @@ public class PeopleFilterDemo {
         System.out.println("All school email addresses");
         Arrays.stream(personArray).filter(p -> p.getEmailMap().containsKey(EmailAddress.Email.SCHOOL))
                 .map(p -> p.getEmailMap().get(EmailAddress.Email.SCHOOL))
-                .forEach(p-> System.out.println(p));
+                .forEach(System.out::println);
 
         System.out.println("\n");
         System.out.println("All email addresses for those over 40");
         Arrays.stream(personArray).filter(p -> p.getAge() > 40)
                 .map(p -> p.getEmailMap().values())
-                .forEach(p -> System.out.println(p));
+                .forEach(System.out::println);
 
+        System.out.println("\n");
+        System.out.println("Each name, and number of email addresses; ordered by number of email address, last name, then first name"); //cant figure out how to sort by two variables in one stream
+        Arrays.stream(personArray).sorted((p1, p2) -> p1.getEmailMap().size() - p2.getEmailMap().size())
+                .forEach(e-> System.out.println(e.getName() + ": " + e.getEmailMap().size()));
 
         System.out.println("\n");
         System.out.println("Each name, and number of email addresses; ordered by number of email address, last name, then first name");
-        Arrays.stream(personArray).sorted((p1, p2) -> p1.getEmailMap().size() - p2.getEmailMap().size())
-                .forEach(e-> System.out.println(e.getName() + ": " + e.getEmailMap().size()));
+        Arrays.sort(personArray, Person::compareByNumEmails); //sorted by email
+        Person[] sorted = new Person[8];
+        int i = 0;
+        int j = 0;
+        while(personArray[i].getEmailMap().size() == j){    //sort each email num group by name
+            sorted[i] = personArray[i];
+            i++;
+            Arrays.sort(sorted, Person::compareByName);
+            j++;
+        } //still not fully sorted
+        Arrays.stream(personArray).forEach(e-> System.out.println(e.getName() + ": " + e.getEmailMap().size()));
     }
 }

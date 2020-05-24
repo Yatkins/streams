@@ -59,4 +59,23 @@ public class Person {
                 ", age=" + age
                 + "}";
     }
+
+    public static int compareByNumEmails(Person a, Person b) {
+        int compare;
+        if(a.getEmailMap().size() > b.getEmailMap().size()){
+            compare = 0;
+        }if(a.getEmailMap().size() > b.getEmailMap().size()){
+            compare = 1;
+        }else{
+            compare = -1;
+        }return compare;
+    }
+
+    public static int compareByName(Person a, Person b) {
+        int compare = a.getName().getLastName().compareTo(b.getName().getLastName());
+        if (compare == 0) {
+            compare = a.getName().getFirstName().compareTo(b.getName().getFirstName());
+        }
+        return compare;
+    }
 }
